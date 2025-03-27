@@ -1,6 +1,9 @@
 from mcp.server.fastmcp import FastMCP
 from dotenv import load_dotenv
 import os
+import httpx
+import json
+from bs4 import BeautifulSoup
 
 load_dotenv()
 
@@ -16,13 +19,26 @@ docs_url={
 
 }
 
-def search_web():
-    ...
-def fetch_url():
-    ...
+async def search_web(query:str) ->dict |None:
+    payload=json.dumps({"q":query,"num":2})
+
+    headers={
+        "X-API-KEY":os.getenv("SERPER_API_KEY"),
+        "Content-Type":"application/json",
+    }
+
+async def fetch_url():
+    async with httpx.AsyncClient() as Client:
+        try:
+            response =await client.get(url,timeout=30.0)  #gets title and url
+            soup=BeautifulSoup(response.text,"html.parser")
+            text=soup.get_text()
+            return text
+        except httpx.TimeoutExceptions:
+            return "Timeout error"
 
 @mcp.tool()
-def get_docs():
+def get_docs(): # when get_docs is called it return docs_url
     ...
 
 def main():
