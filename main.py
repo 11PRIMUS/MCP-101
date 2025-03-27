@@ -38,12 +38,33 @@ async def fetch_url():
             return "Timeout error"
 
 @mcp.tool()
-def get_docs(): # when get_docs is called it return docs_url
-    ...
+async def get_docs(quer:str,library:str): # when get_docs is called it return docs_url
+    """
+    Search docs for given question and library,
+    it supports langchain ,openai, and llama.
+    
+    Args:
+    query: query to search ex- Chroma DB
+    library: library to search ex-langchain
+    
+    Returns;
+        text from docs
+                """
+    
+    if library not in docs_urls:
+        raise ValueError(f"Library {library} not supportedd")
 
-def main():
-    print("Hello from mcp1!")
+    query=f"{query} site:{docs_urls[library]} {query}"
+    results=await search_web(query)
+    if len(results["organic"])==0:
+        return "No results found"
+
+    text=""
+    for result in results["organic"]:
+        text+=await fetch_url(result["link"])
+    return text
+
 
 
 if __name__ == "__main__":
-    main()
+    mcp.run(transport="stdio")
